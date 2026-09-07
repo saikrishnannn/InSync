@@ -79,9 +79,3 @@ An instant, client-side toggle that dynamically alters partner advice:
 - npm or yarn
 - A Firebase project with Firestore and Anonymous Auth enabled
 
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/your-username/insync.git](https://github.com/your-username/insync.git)
-   cd insync
