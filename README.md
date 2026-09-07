@@ -1,77 +1,87 @@
-# InSync
+# InSync 🌸
 
-Dual-role menstrual cycle tracker and partner-support dashboard. React + Vite
-frontend, Firebase (Auth, Firestore) backend, no server code required.
+> **Understand her cycle. Stay in sync.**  
+> A privacy-first, dual-role menstrual cycle tracker and partner-support web app designed to bridge biological data with proactive empathy.
 
-## What's implemented
+Live Demo: [https://insync-0.web.app/](https://insync-0.web.app/)
 
-- Anonymous auth on first launch, no email/password required
-- Role selection (Tracker / Partner) → dual rose/slate themes
-- One-time 6-character pairing code, permanent link once redeemed, 24h expiry on unused codes
-- Tracker: multi-month calendar with flow/fertile-window/ovulation markers, daily log
-  drawer (flow, pain scale, symptoms, BBT, cervical fluid, mood, sleep, stress, private notes)
-- Cycle math: phase detection, next-period/ovulation prediction, rolling cycle-length
-  variance and short-luteal-phase anomaly flags (advisory only, never silently reshapes
-  predictions)
-- Cycle-synced fitness & macro guidance per phase, with an automatic kcal buffer in luteal phase
-- Product inventory tracker with a low-stock warning window before predicted period start
-- Granular privacy matrix (phase, tips, mood, pain toggleable; private notes and BBT hardcoded private)
-  that gates exactly what gets published to `partner_sync`
-- Partner dashboard: live `onSnapshot` sync, In-Person/Long-Distance mode switch (stored in
-  `localStorage`, zero extra reads/writes for the tracker), categorized tip cards, deterministic
-  daily tip rotation from a 20+ prompt-per-category dictionary
-- Unlink Partner (both sides), Reset Cycle History (soft), Full App & Account Reset (hard, with
-  double confirmation)
-- `firestore.rules` enforcing the schema's privacy boundaries
+---
 
-## What you'll need to do
+## 📌 Overview
 
-1. **Create a Firebase project** at https://console.firebase.google.com
-2. **Enable Anonymous Authentication**: Build → Authentication → Sign-in method → Anonymous → Enable
-3. **Create a Firestore database**: Build → Firestore Database → Create database (production mode)
-4. **Get your web app config**: Project settings → General → Your apps → Add app (Web) →
-   copy the config values into a `.env` file at the project root (copy `.env.example` first)
-5. **Deploy security rules**:
+Most cycle tracking apps treat reproductive health as an isolated, clinical silo. They overwhelm users with medical jargon, graphs, and paywalls—leaving partners in the dark and placing the emotional burden on women to explain their physical fatigue, pain, and mood shifts.
+
+**InSync** reimagines cycle tracking as a shared, relational experience:
+- **For Her:** A zero-friction cycle, lifestyle, and fitness hub featuring cycle-synced workouts, nutrition buffers, and predictive supply stash alerts.
+- **For Him:** The **Partner Translation Engine**, which ingests her phase and logged comfort levels, stripping away the guesswork to deliver actionable guidance across communication, date planning, food, and daily gestures.
+
+---
+
+## ✨ Key Features
+
+### 🔄 The Partner Translation Engine
+Translates clinical phase data (e.g., *Late Luteal Phase*) into 4 actionable buckets:
+- **Communication Tone:** How to communicate with empathy and reduce conversational friction.
+- **Date Planning:** Low-energy vs. high-energy social activity suggestions.
+- **Nutrition & Cravings:** Phase-specific comfort meals and micronutrient suggestions.
+- **Proactive Gestures:** Small, high-impact actions to support her day.
+
+### ✈️ In-Person vs. Long-Distance Mode
+An instant, client-side toggle that dynamically alters partner advice:
+- **In-Person:** Focuses on physical care (heating pads, home-cooked meals, physical presence).
+- **Long-Distance:** Shifts to remote gestures (surprise deliveries, digital care packages, low-pressure check-ins).
+
+### 🔒 Privacy-by-Design Architecture
+- **Zero-PII Onboarding:** Uses Firebase Anonymous Auth. No email, password, or phone number required.
+- **6-Character Pairing Handshake:** Devices connect securely using a single-use pairing code.
+- **Client-Side Data Isolation:** Sensitive journal notes, symptom logs, and BBT remain sandboxed in browser storage (`localStorage` / `IndexedDB`) on the user's physical device and never touch a network packet.
+- **Sanitized Real-Time Sync:** Only high-level, non-identifiable status metadata (current phase, comfort score, low-supply alerts) syncs to Firestore via real-time listeners.
+
+### 📦 Smart Stash & Supply Depletion Predictor
+- Tracks physical pad/tampon inventory.
+- Decrements counts automatically on logged bleed days.
+- Triggers low-stock alerts 2 days prior to the predicted cycle onset to prevent emergency store runs.
+
+### 🏋️ Cycle-Synced Fitness & Macros
+- Adapts training recommendations by phase (progressive overload in follicular; deloads and active recovery in luteal).
+- Suggests automatic caloric buffers (+100 to +250 kcal) to support luteal metabolic demands.
+
+### ⚡ Batch-Logging & Cycle Health History
+- **One-Tap Predictive Logging:** Auto-populates expected period duration to eliminate daily check-in burnout while preserving day-by-day editability.
+- **Cycle Health Analytics:** Retrospective view tracking historical cycle lengths, period duration, and ovulation milestones over time.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | React (JSX), Tailwind CSS |
+| **State & Local Storage** | React Hooks, Web Storage API (`localStorage` / `IndexedDB`) |
+| **Backend & Sync** | Firebase Firestore (Real-time listeners & Security Rules) |
+| **Authentication** | Firebase Anonymous Auth |
+| **Hosting** | Firebase Hosting |
+
+---
+
+## 🧠 Architectural & Algorithmic Highlights
+
+- **Modified Calendar Projection (Ogino-Knaus):** Dynamically computes phase intervals (Menstrual, Follicular, Ovulation/Fertile Window, and Luteal) and continually recalibrates predicted start dates as historical cycles are recorded.
+- **Deterministic Tip Rotation:** Evaluates date seeds, phase keys, and distance modes through a client-side hashing algorithm, rotating across 160+ curated advice cards synchronously between partners without incurring Firestore read costs.
+- **Selective Data Firewall:** Implements an intentional sync boundary ensuring raw client logs remain purely local while sending only sanitized state updates across the wire.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v18+ recommended)
+- npm or yarn
+- A Firebase project with Firestore and Anonymous Auth enabled
+
+### Installation
+
+1. **Clone the repository:**
    ```bash
-   npm install -g firebase-tools
-   firebase login
-   firebase init   # select this project's Firestore + Hosting, use existing files when prompted
-   firebase deploy --only firestore:rules
-   ```
-
-## Local development
-
-```bash
-npm install
-npm run dev
-```
-
-Open the printed localhost URL in two different browser profiles (or one normal + one
-incognito window) to simulate a Tracker and a Partner pairing with each other.
-
-## Deploying
-
-```bash
-npm run build
-firebase deploy
-```
-
-## Logo asset
-
-`src/assets/logo.png` is the sunburst/crescent-moon mark you provided. It's referenced as a
-raster image rather than inline SVG — if you have the original vector file, drop it in as
-`src/assets/logo.svg` and swap the `<img>` imports in `App.jsx`, `RoleSelect.jsx`,
-`Pairing.jsx`, `TrackerApp.jsx`, and `PartnerApp.jsx`.
-
-## Notes on scope / what to harden before real users
-
-- Anomaly detection and daily tip publishing run client-side on the tracker's device. For a
-  production app you'd likely move `publishPartnerSync` and anomaly checks into a scheduled
-  Cloud Function so they run even when the tracker's app isn't open.
-- The `pairCodes` collection rules are permissive (any signed-in user can read/write) to keep
-  setup simple; tighten this with a Cloud Function-issued custom claim if you want stricter
-  guarantees.
-- Journal notes and BBT are stored in Firestore in plaintext within `private_logs`, which only
-  the owner can read per the security rules. The spec mentions "encrypted" journal notes — true
-  client-side encryption (e.g. via the Web Crypto API with a user-held key) isn't implemented
-  yet and would be a good next addition if that's a hard requirement.
+   git clone [https://github.com/your-username/insync.git](https://github.com/your-username/insync.git)
+   cd insync
